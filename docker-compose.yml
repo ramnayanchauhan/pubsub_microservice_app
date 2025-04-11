@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  receiver:
+    build: ./receiver-service
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URI=mongodb://host.docker.internal:27017/receiverDB
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+
+  listener:
+    build: ./listene-service
+    environment:
+      - MONGO_URI=mongodb://host.docker.internal:27017/listenerDB
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
